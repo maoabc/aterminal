@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <data>
+        
+        <import type="android.view.View" />
+        
+        <variable
+            name="option"
+            type="com.github.maoabc.aterm.viewmodel.SshServerOption" />
+    </data>
+    
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tl_host"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/host"
+                android:paddingStart="@dimen/margin_default"
+                android:paddingEnd="@dimen/margin_default">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_host"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri"
+                    android:text="@={option.host}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tl_port"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tl_host"
+                android:hint="@string/port"
+                android:paddingStart="@dimen/margin_default"
+                android:paddingEnd="@dimen/margin_default">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_port"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:maxLength="5"
+                    android:text="@={option.port}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            
+            
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tl_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tl_port"
+                android:hint="@string/username"
+                android:paddingStart="@dimen/margin_default"
+                android:paddingEnd="@dimen/margin_default">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:text="@={option.username}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/use_key_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tl_username"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:checked="@={option.enableKey}"
+                android:text="@string/use_key" />
+            
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tl_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/use_key_file"
+                android:hint="@string/password"
+                android:paddingStart="@dimen/margin_default"
+                android:paddingEnd="@dimen/margin_default"
+                android:visibility="@{option.enableKey ? View.GONE : View.VISIBLE }"
+                app:passwordToggleEnabled="true">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:text="@={option.password}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            
+            
+            <EditText
+                android:id="@+id/et_private_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/use_key_file"
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:hint="@string/paste_private_key_content"
+                android:inputType="textMultiLine"
+                android:lines="10"
+                android:maxLines="999"
+                android:scrollbars="vertical"
+                android:text="@={option.privateKey}"
+                android:visibility="@{option.enableKey ? View.VISIBLE : View.GONE}" />
+            
+            
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tl_key_passphrase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/et_private_key"
+                android:hint="@string/key_passphrase"
+                android:paddingStart="@dimen/margin_default"
+                android:paddingEnd="@dimen/margin_default"
+                android:visibility="@{option.enableKey ? View.VISIBLE : View.GONE}"
+                app:passwordToggleEnabled="true">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_key_passphrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:text="@={option.passphrase}" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </RelativeLayout>
+    </ScrollView>
+</layout>

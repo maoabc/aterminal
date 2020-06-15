@@ -1,0 +1,68 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.github.maoabc.aterm">
+    
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <application
+        android:name="com.github.maoabc.BaseApp"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <service
+            android:name="com.github.maoabc.aterm.ATermService"
+            android:exported="false" />
+        
+        <activity
+            android:name="com.github.maoabc.aterm.ATermActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+            android:excludeFromRecents="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.github.maoabc.aterm.ATermActivity"
+            android:theme="@style/AppTheme.Transparent"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        
+        </activity>
+        <activity
+            android:name="com.github.maoabc.aterm.ATermSettingsActivity"
+            android:configChanges="uiMode"
+            android:theme="@style/AppTheme" />
+        
+        <activity
+            android:name="com.github.maoabc.aterm.ATermIntentHandler"
+            android:autoRemoveFromRecents="true"
+            android:label="@string/title_run_script_term"
+            android:noHistory="true"
+            android:taskAffinity="com.github.maoabc.aterm.ATermIntentHandler">
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                
+                <category android:name="android.intent.category.DEFAULT" />
+                
+                <data android:mimeType="text/*" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="application/*xml*" />
+                <data android:mimeType="application/*latex*" />
+                <data android:mimeType="application/javascript" />
+                <data
+                    android:mimeType="application/x-sh"
+                    android:pathPattern=".*\\.sh" />
+            </intent-filter>
+        </activity>
+    
+    
+    </application>
+</manifest>

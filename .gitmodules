@@ -1,0 +1,6 @@
+[submodule "terminalview"]
+	path = terminalview
+	url = git@github.com:maoabc/aterminalview.git
+[submodule "pty"]
+	path = pty
+	url = git@github.com:maoabc/aterminalpty.git

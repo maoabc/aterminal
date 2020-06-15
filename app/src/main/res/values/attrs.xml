@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <attr name="dividerEnable" format="boolean" />
+    <attr name="dividerColor" format="color" />
+    <attr name="dividerStart" format="dimension" />
+    <declare-styleable name="DividerRelativeLayout">
+        <attr name="dividerEnable" />
+        <attr name="dividerColor" />
+        <attr name="dividerStart" />
+    </declare-styleable>
+</resources>

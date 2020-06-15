@@ -1,0 +1,4 @@
+rootProject.name='aterm'
+include ':app'
+include ':terminalview'
+include ':pty'

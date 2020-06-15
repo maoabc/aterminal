@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">ATerm</string>
+    <string name="title_run_script_term">Run Script</string>
+    
+    <string name="view_preference">View</string>
+    <string name="title_color_preference">Color</string>
+    <string name="term_background_alpha">Background Alpha</string>
+    
+    <string name="title_fontsize_preference">Font Size</string>
+    <string name="dialog_title_fontsize_preference">Font size</string>
+    <string name="new_terminal">New Terminal</string>
+    <string name="close">Close</string>
+    <string name="new_ssh_server">New SSH</string>
+    <string name="edit_ssh_server">Edit SSH</string>
+    <string name="edit_session_name">Edit session name</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="empty_text">Text is empty</string>
+    <string name="closed_term_session">Close terminal session</string>
+    <string name="term_session_running">Terminal session running</string>
+    <string name="terminal_session_exit_msg">[Process complete(%d) - press Enter]</string>
+    <string name="host">Host</string>
+    <string name="port">Port</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="use_key">Use key</string>
+    <string name="paste_private_key_content">Private key content</string>
+    <string name="select_key_path">Key path</string>
+    <string name="key_passphrase">Key passphrase</string>
+    <string name="empty_host">Host is empty</string>
+    <string name="empty_username">Username is empty</string>
+    <string name="need_enter_password_or_key">Need password or key</string>
+    <string name="key_invalid">Key format invalid</string>
+    <string name="title_floating_term_settings">Terminal settings</string>
+
+
+</resources>

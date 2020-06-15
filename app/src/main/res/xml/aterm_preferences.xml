@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <PreferenceCategory
+        android:title="@string/view_preference"
+        app:iconSpaceReserved="false">
+        
+        <ListPreference
+            android:defaultValue="14"
+            android:entries="@array/entries_fontsize_preference"
+            android:entryValues="@array/values_fontsize_preference"
+            android:key="fontsize"
+            android:title="@string/title_fontsize_preference"
+            app:iconSpaceReserved="false" />
+        
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/entries_color_preference"
+            android:entryValues="@array/values_color_preference"
+            android:key="color"
+            android:title="@string/title_color_preference"
+            app:iconSpaceReserved="false" />
+        
+        <SeekBarPreference
+            android:defaultValue="255"
+            android:key="background_alpha"
+            android:max="255"
+            android:title="@string/term_background_alpha"
+            app:iconSpaceReserved="false" />
+        
+        <!--CheckBoxPreference
+            android:defaultValue="true"
+            android:key="utf8_by_default"
+            android:summary="@string/summary_utf8_by_default_preference"
+            android:title="@string/title_utf8_by_default_preference" /-->
+    
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,52 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    
+    <data>
+        
+        <import type="android.view.View" />
+        
+        <variable
+            name="viewModel"
+            type="com.github.maoabc.aterm.viewmodel.AddTerminalViewModel" />
+        
+        <variable
+            name="item"
+            type="com.github.maoabc.aterm.viewmodel.TerminalItem" />
+    
+    </data>
+    
+    <com.github.maoabc.common.widget.DividerRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="?attr/selectableItemBackground"
+        android:onClick="@{item::onClick}"
+        android:onLongClick="@{item::onLongClick}"
+        android:paddingStart="@dimen/margin_default"
+        android:paddingEnd="@dimen/margin_default"
+        app:dividerColor="?android:attr/textColorSecondary"
+        app:dividerEnable="true">
+        
+        <TextView
+            android:id="@+id/tv_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/btn_delete"
+            android:ellipsize="start"
+            android:text="@{item.name}"
+            tools:text="hello world" />
+        
+        <ImageButton
+            android:id="@+id/btn_delete"
+            style="?attr/actionButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:onClick="@{(v)->viewModel.deleteServer(item)}"
+            android:src="@drawable/ic_cancel_24dp"
+            android:visibility="@{item.local?View.GONE:View.VISIBLE}"
+            tools:ignore="ContentDescription" />
+    </com.github.maoabc.common.widget.DividerRelativeLayout>
+</layout>
