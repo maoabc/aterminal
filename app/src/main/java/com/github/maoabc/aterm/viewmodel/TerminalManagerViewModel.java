@@ -10,11 +10,11 @@ import com.github.maoabc.aterm.db.entities.SshServer;
 import com.github.maoabc.aterm.db.source.SshServerDataSource;
 
 
-public class AddTerminalViewModel extends ViewModel {
+public class TerminalManagerViewModel extends ViewModel {
     public final ObservableList<TerminalItem> terminals = new ObservableArrayList<>();
     private SshServerDataSource sshServerDataSource;
 
-    public AddTerminalViewModel() {
+    public TerminalManagerViewModel() {
         loadTerminals();
     }
 

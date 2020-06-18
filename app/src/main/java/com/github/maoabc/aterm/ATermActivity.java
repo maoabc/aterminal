@@ -147,7 +147,7 @@ public class ATermActivity extends AppCompatActivity {
             throw new IllegalStateException("Failed to bind to TermService!");
         }
         findViewById(R.id.btn_nav_add_term).setOnClickListener(v -> {
-            AddTerminalDialogFragment fragment = AddTerminalDialogFragment.newInstance();
+            TerminalManagerDialogFragment fragment = TerminalManagerDialogFragment.newInstance();
             fragment.show(getSupportFragmentManager(), null);
         });
 

@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.maoabc.aterm.databinding.ListItemBinding;
 import com.github.maoabc.aterm.db.entities.SshServer;
-import com.github.maoabc.aterm.viewmodel.AddTerminalViewModel;
+import com.github.maoabc.aterm.viewmodel.TerminalManagerViewModel;
 import com.github.maoabc.aterm.viewmodel.SshServerOption;
 import com.github.maoabc.aterm.viewmodel.TerminalItem;
 import com.github.maoabc.util.Precondition;
@@ -31,15 +31,15 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
-public class AddTerminalDialogFragment extends DialogFragment {
+public class TerminalManagerDialogFragment extends DialogFragment {
 
-    private AddTerminalViewModel mViewModel;
+    private TerminalManagerViewModel mViewModel;
 
-    public static AddTerminalDialogFragment newInstance() {
+    public static TerminalManagerDialogFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        AddTerminalDialogFragment fragment = new AddTerminalDialogFragment();
+        TerminalManagerDialogFragment fragment = new TerminalManagerDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,7 +47,7 @@ public class AddTerminalDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(AddTerminalViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(TerminalManagerViewModel.class);
         EventBus.getDefault().register(this);
     }
 
@@ -142,13 +142,13 @@ public class AddTerminalDialogFragment extends DialogFragment {
 
     static class ServerItemAdapter extends RecyclerView.Adapter<ServerItemAdapter.ListItemViewHolder> {
 
-        private final AddTerminalViewModel mViewModel;
+        private final TerminalManagerViewModel mViewModel;
 
         private List<TerminalItem> mItemList;
 
         private RecyclerViewAdapterChangedCallback mListChangedCallback;
 
-        ServerItemAdapter(@NonNull AddTerminalViewModel viewModel) {
+        ServerItemAdapter(@NonNull TerminalManagerViewModel viewModel) {
             this.mViewModel = viewModel;
             setList(mViewModel.terminals);
         }
