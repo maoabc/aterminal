@@ -2,6 +2,7 @@ package com.github.maoabc.aterm;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,16 +12,16 @@ public class ATermIntentHandler extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handlerIntent(getIntent());
+        handleIntent(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handlerIntent(intent);
+        handleIntent(intent);
     }
 
-    private void handlerIntent(Intent intent) {
+    private void handleIntent(Intent intent) {
         if (intent == null) {
             return;
         }
@@ -37,12 +38,16 @@ public class ATermIntentHandler extends AppCompatActivity {
             intent1.putExtras(intent);
             startService(intent1);
         } else {
-            Intent intent1 = new Intent(this, ATermService.class);
-            intent1.setDataAndType(intent.getData(), intent.getType());
-            if (intent.getExtras() != null) {
-                intent1.putExtras(intent);
+            try {
+                Intent newIntent = new Intent(this, ATermService.class);
+                newIntent.setDataAndType(intent.getData(), intent.getType());
+                if (intent.getExtras() != null) {
+                    newIntent.putExtras(intent);
+                }
+                startService(newIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "handleIntent: ", e);
             }
-            startService(intent1);
         }
     }
 
