@@ -22,7 +22,6 @@ import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableList;
 import androidx.lifecycle.MutableLiveData;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.maoabc.BaseApp;
 import com.github.maoabc.aterm.ssh.SshTerminal;
@@ -201,8 +200,7 @@ public class ATermService extends Service {
         }
         if (SERVICE_ACTION_STOP_SERVICE.equals(action)) {
             stopSelf();
-            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-            localBroadcastManager.sendBroadcast(new Intent(ATermActivity.ATERM_ACTION_STOP));
+            EventBus.getDefault().post(new FinishTerminalActivityEvent());
         } else if (SERVICE_ACTION_CHANGE_DIRECTORY.equals(action)) {
             AbstractTerminal terminal = currentTerminal.getValue();
             if (terminal == null) {//第一次启动可能没任何终端，先创建个本地终端，然后设置为当前
@@ -381,10 +379,8 @@ public class ATermService extends Service {
             handler.post(() -> {
                 removeTerminal(terminal);
 
-                //会话不为空也停止activity,为空则removeTerminal会停止服务，不用再重复发广播
                 if (!terminals.isEmpty()) {
-                    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(ATermService.this);
-                    localBroadcastManager.sendBroadcast(new Intent(ATermActivity.ATERM_ACTION_STOP));
+                    EventBus.getDefault().post(new FinishTerminalActivityEvent());
                 }
             });
         }
@@ -455,6 +451,11 @@ public class ATermService extends Service {
 
         TerminalLongClickEvent(AbstractTerminal terminal) {
             this.terminal = terminal;
+        }
+    }
+
+    public static class FinishTerminalActivityEvent {
+        FinishTerminalActivityEvent() {
         }
     }
 }

@@ -1,10 +1,8 @@
 package com.github.maoabc.aterm;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -23,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.maoabc.BaseApp;
@@ -44,7 +41,6 @@ import aterm.terminal.UpdateCallback;
 public class ATermActivity extends AppCompatActivity {
     public static final String TAG = ATermActivity.class.getName();
     public static final boolean DEBUG = BuildConfig.DEBUG;
-    public static final String ATERM_ACTION_STOP = "aterm.action.stopMainActivity";
 
     private final DisplayMetrics metrics = new DisplayMetrics();
 
@@ -64,14 +60,6 @@ public class ATermActivity extends AppCompatActivity {
             mATermService = null;
         }
     };
-    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (ATERM_ACTION_STOP.equals(intent.getAction())) {
-                finish();
-            }
-        }
-    };
     SharedPreferences.OnSharedPreferenceChangeListener mTermPreferChanged = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -81,13 +69,11 @@ public class ATermActivity extends AppCompatActivity {
             }
         }
     };
-    private Intent mIntent;
     private TerminalView mTerminalView;
     private boolean mHaveFullHwKeyboard;
     private CheckableButton mCtrlChecked;
 
     private Handler handler = new Handler();
-    private LocalBroadcastManager mLocalBroadcastManager;
     private DrawerLayout mDrawerLayout;
     private BellUtil bellUtil;
 
@@ -98,8 +84,6 @@ public class ATermActivity extends AppCompatActivity {
         setContentView(R.layout.activity_aterm);
 //        Window window = getWindow();
 //        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
-        mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, new IntentFilter(ATERM_ACTION_STOP));
         EventBus.getDefault().register(this);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -141,9 +125,9 @@ public class ATermActivity extends AppCompatActivity {
         });
 
 
-        mIntent = new Intent(this, ATermService.class);
-        startService(mIntent);
-        if (!bindService(mIntent, mTSConnection, 0)) {
+        Intent intent = new Intent(this, ATermService.class);
+        startService(intent);
+        if (!bindService(intent, mTSConnection, 0)) {
             throw new IllegalStateException("Failed to bind to TermService!");
         }
         findViewById(R.id.btn_nav_add_term).setOnClickListener(v -> {
@@ -198,6 +182,11 @@ public class ATermActivity extends AppCompatActivity {
 
     }
 
+    @Subscribe
+    public void onFinishActivityEvent(ATermService.FinishTerminalActivityEvent event) {
+        finish();
+    }
+
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -219,8 +208,6 @@ public class ATermActivity extends AppCompatActivity {
         if (mATermService != null) {
             mATermService.currentTerminal.removeObservers(this);
         }
-        if (mLocalBroadcastManager != null)
-            mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
 
         if (mATermService != null)
             mATermService.mPreferences.unregisterOnSharedPreferenceChangeListener(mTermPreferChanged);
