@@ -299,7 +299,7 @@ public class ATermActivity extends AppCompatActivity {
         if (mTerminalView == null) {
             return;
         }
-        if (!(terminal instanceof AndroidTerminal) || !((AndroidTerminal) terminal).isAfterExecExit()) {
+        if (!(terminal instanceof AndroidTerminal) || !((AndroidTerminal) terminal).isExitAfterExit()) {
             terminal.setDestroyCallback((terminal1, exitCode) -> {
                 handler.post(() -> {
                     if (mATermService != null) {
@@ -342,9 +342,8 @@ public class ATermActivity extends AppCompatActivity {
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (mTerminalView != null) {
             AbstractTerminal terminal = mTerminalView.getTerminal();
-            if (terminal instanceof AndroidTerminal && ((AndroidTerminal) terminal).isAfterExecExit()) {
-                ((AndroidTerminal) terminal).onAKeyDown(event.getKeyCode());
-                return true;
+            if (terminal instanceof AndroidTerminal && ((AndroidTerminal) terminal).isExitAfterExit()) {
+                ((AndroidTerminal) terminal).exitProcess();
             }
         }
         return super.dispatchKeyEvent(event);

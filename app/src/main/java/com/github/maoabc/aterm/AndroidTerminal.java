@@ -2,7 +2,6 @@ package com.github.maoabc.aterm;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
 
@@ -30,7 +29,7 @@ public class AndroidTerminal extends AbstractTerminal {
     private String mTitle;
 
     //执行结束退出
-    private final boolean mExecExit;
+    private final boolean mExitAfterExec;
 
     private volatile CountDownLatch mLatch;
 
@@ -47,7 +46,7 @@ public class AndroidTerminal extends AbstractTerminal {
         mTitle = key;
         this.mExecutePath = executePath;
         this.mArgs = args;
-        this.mExecExit = exit;
+        this.mExitAfterExec = exit;
     }
 
 
@@ -108,12 +107,12 @@ public class AndroidTerminal extends AbstractTerminal {
         mPtyOutput = new FileOutputStream(fd);
     }
 
-    public boolean isAfterExecExit() {
-        return mExecExit;
+    public boolean isExitAfterExit() {
+        return mExitAfterExec;
     }
 
 
-    public void onAKeyDown(int keyCode) {
+    public void exitProcess() {
         if (mLatch != null) mLatch.countDown();
     }
 
@@ -220,7 +219,6 @@ public class AndroidTerminal extends AbstractTerminal {
 
     @Override
     public void release() {
-        onAKeyDown(KeyEvent.KEYCODE_ENTER);
     }
 
     @Override
