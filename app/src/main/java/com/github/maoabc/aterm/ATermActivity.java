@@ -34,6 +34,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import aterm.terminal.AbstractTerminal;
+import aterm.terminal.TerminalKeys;
 import aterm.terminal.TerminalView;
 import aterm.terminal.UpdateCallback;
 
@@ -96,7 +97,12 @@ public class ATermActivity extends AppCompatActivity {
         mCtrlChecked.setOnClickListener(v -> {
             if (v instanceof Checkable) {
                 ((Checkable) v).toggle();
-                mTerminalView.setCtrlOn(((Checkable) v).isChecked());
+
+                boolean checked = ((Checkable) v).isChecked();
+                int modifiers = mTerminalView.getModifiers();
+                mTerminalView.setModifiers(checked ?
+                        modifiers | TerminalKeys.VTERM_MOD_CTRL :
+                        modifiers & ~TerminalKeys.VTERM_MOD_CTRL);
 
             }
         });
@@ -303,8 +309,6 @@ public class ATermActivity extends AppCompatActivity {
         mTerminalView.setUpdateCallback(new UpdateCallback() {
             @Override
             public void onUpdate() {
-                //todo
-                mCtrlChecked.setChecked(mTerminalView.isCtrlOn());
             }
 
             @Override
@@ -312,6 +316,8 @@ public class ATermActivity extends AppCompatActivity {
                 if (bellUtil != null) bellUtil.doBell();
             }
         });
+
+        mTerminalView.setModifiersChangedListener(modifiers -> mCtrlChecked.setChecked((modifiers & TerminalKeys.VTERM_MOD_CTRL) != 0));
 
 
     }
