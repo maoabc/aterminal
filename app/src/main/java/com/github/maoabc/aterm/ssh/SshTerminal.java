@@ -16,8 +16,6 @@ import com.jcraft.jsch.Session;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import aterm.terminal.AbstractTerminal;
 
@@ -31,21 +29,23 @@ public class SshTerminal extends AbstractTerminal {
 
     private final String mKey;
     private String mTitle;
-    private Session session;
-    private volatile ChannelShell shell;
+    private volatile Session mSession;
+    private volatile ChannelShell mShell;
     private Handler mWriterHandler;
+    private int mRows;
+    private int mCols;
 
     @NonNull
-    private String host;
+    private String mHost;
 
-    private int port = 22;
+    private int mPort = 22;
 
-    private String username;
+    private String mUsername;
 
-    private String password;
+    private String mPassword;
 
-    private String privateKey = "";
-    private String passphrase = "";
+    private String mPrivateKey = "";
+    private String mPassphrase = "";
     private HandlerThread mHandlerThread;
 
     public SshTerminal(ATermSettings settings, @NonNull String host, int port,
@@ -53,12 +53,14 @@ public class SshTerminal extends AbstractTerminal {
                        String privateKey, String passphrase,
                        @NonNull String key) {
         super(50, 30, 100, settings.getColorScheme()[0], settings.getColorScheme()[1]);
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
-        this.privateKey = privateKey;
-        this.passphrase = passphrase;
+        mRows = 50;
+        mCols = 30;
+        this.mHost = host;
+        this.mPort = port;
+        this.mUsername = username;
+        this.mPassword = password;
+        this.mPrivateKey = privateKey;
+        this.mPassphrase = passphrase;
         this.mKey = key;
         this.mTitle = key;
     }
@@ -66,85 +68,79 @@ public class SshTerminal extends AbstractTerminal {
 
     @Override
     public void start() {
-        try {
-            JSch jSch = new JSch();
-            if (!TextUtils.isEmpty(privateKey)) {
-                jSch.addIdentity(username + "@" + host,
-                        privateKey.getBytes(), null,
-                        passphrase == null ? null : passphrase.getBytes());
-            }
 
-            session = jSch.getSession(username, host, port);
-            session.setConfig("PreferredAuthentications", "publickey,password");
 
-            session.setConfig("StrictHostKeyChecking", "no");
-
-            session.setConfig("ConnectTimeout", "30");
-
-            session.setConfig("compression.s2c", "zlib@openssh.com,zlib,none");
-            session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
-            session.setConfig("compression_level", "-1");
-
-            if (TextUtils.isEmpty(privateKey) && !TextUtils.isEmpty(password)) {
-                session.setPassword(password.getBytes());
-            }
-
-            CountDownLatch latch = new CountDownLatch(1);
-            new Thread("Pty reader") {
-                @Override
-                public void run() {
-                    try {
-                        session.connect(30000);
-
-                        shell = (ChannelShell) session.openChannel("shell");
-                        shell.setPtyType("xterm-256color");
-                        shell.connect();
-                        shell.setOutputStream(new OutputStream() {
-                            byte[] buf = new byte[1];
-
-                            @Override
-                            public void write(int b) throws IOException {
-                                buf[0] = (byte) b;
-                                write(buf, 0, 1);
-                            }
-
-                            @Override
-                            public void write(byte[] b) throws IOException {
-                                write(b, 0, b.length);
-                            }
-
-                            @Override
-                            public void write(byte[] b, int off, int len) throws IOException {
-                                inputWrite(b, off, len);
-                            }
-
-                            @Override
-                            public void close() throws IOException {
-                                if (mDestroyCallback != null) {
-                                    mDestroyCallback.onDestroy(SshTerminal.this, shell.getExitStatus());
-                                }
-                            }
-                        });
-                        latch.countDown();
-                    } catch (Exception e) {
-                        latch.countDown();
-                        Log.e(TAG, "Pty reader: ", e);
-                        if (mDestroyCallback != null) {
-                            mDestroyCallback.onDestroy(SshTerminal.this, -1);
+        new Thread("Pty reader") {
+            @Override
+            public void run() {
+                try {
+                    JSch jSch = new JSch();
+                    if (!TextUtils.isEmpty(mPrivateKey)) {
+                        try {
+                            jSch.addIdentity(mUsername + "@" + mHost,
+                                    mPrivateKey.getBytes(), null,
+                                    mPassphrase == null ? null : mPassphrase.getBytes());
+                        } catch (JSchException e) {
+                            Log.e(TAG, "addIdentity: ", e);
                         }
+
+                    }
+
+                    mSession = jSch.getSession(mUsername, mHost, mPort);
+                    mSession.setConfig("PreferredAuthentications", "publickey,password");
+                    //todo 检查服务器key
+                    mSession.setConfig("StrictHostKeyChecking", "no");
+
+                    mSession.setConfig("ConnectTimeout", "30");
+
+                    mSession.setConfig("compression.s2c", "zlib@openssh.com,zlib,none");
+                    mSession.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
+                    mSession.setConfig("compression_level", "-1");
+
+                    if (TextUtils.isEmpty(mPrivateKey) && !TextUtils.isEmpty(mPassword)) {
+                        mSession.setPassword(mPassword.getBytes());
+                    }
+
+                    mSession.connect(30000);
+
+                    mShell = (ChannelShell) mSession.openChannel("shell");
+                    mShell.setPtyType("xterm-256color");
+                    mShell.connect();
+                    mShell.setOutputStream(new OutputStream() {
+                        byte[] buf = new byte[1];
+
+                        @Override
+                        public void write(int b) throws IOException {
+                            buf[0] = (byte) b;
+                            write(buf, 0, 1);
+                        }
+
+                        @Override
+                        public void write(byte[] b) throws IOException {
+                            write(b, 0, b.length);
+                        }
+
+                        @Override
+                        public void write(byte[] b, int off, int len) throws IOException {
+                            inputWrite(b, off, len);
+                        }
+
+                        @Override
+                        public void close() throws IOException {
+                            if (mDestroyCallback != null) {
+                                mDestroyCallback.onDestroy(SshTerminal.this, mShell.getExitStatus());
+                            }
+                        }
+                    });
+                    mShell.setPtySize(mCols, mCols, 0, 0);
+                } catch (Exception e) {
+                    Log.e(TAG, "Pty reader: ", e);
+                    if (mDestroyCallback != null) {
+                        mDestroyCallback.onDestroy(SshTerminal.this, -1);
                     }
                 }
-            }.start();
-            try {
-                latch.await(20, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
             }
-        } catch (JSchException e) {
-            Log.e(TAG, "Init jsch: ", e);
-            if (mDestroyCallback != null) {
-                mDestroyCallback.onDestroy(SshTerminal.this, -1);
-            }
-        }
+        }.start();
         //写入数据到pty，消息循环
         mHandlerThread = new HandlerThread("Pty writer");
         mHandlerThread.start();
@@ -152,7 +148,7 @@ public class SshTerminal extends AbstractTerminal {
             OutputStream outputStream;
 
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(@NonNull Message msg) {
                 switch (msg.what) {
                     case MSG_NOTIFY_PTY_WRITE: {
                         byte[] bytes = new byte[4096];
@@ -160,11 +156,11 @@ public class SshTerminal extends AbstractTerminal {
                             int read = mByteQueue.read(bytes, 0, Math.min(mByteQueue.getBytesAvailable(), bytes.length));
                             if (read > 0) {
                                 if (outputStream == null) {
-                                    if (shell == null) {
+                                    if (mShell == null) {
                                         Log.e(TAG, "Not start shell");
                                         return;
                                     }
-                                    outputStream = shell.getOutputStream();
+                                    outputStream = mShell.getOutputStream();
                                 }
                                 outputStream.write(bytes, 0, read);
 
@@ -175,7 +171,7 @@ public class SshTerminal extends AbstractTerminal {
                         break;
                     }
                     case MSG_NOTIFY_PTY_RESIZE: {
-                        if (shell != null) shell.setPtySize(msg.arg1, msg.arg2, 0, 0);
+                        if (mShell != null) mShell.setPtySize(msg.arg1, msg.arg2, 0, 0);
                         break;
                     }
                     case MSG_NOTIFY_PTY_FLUSH: {
@@ -213,17 +209,19 @@ public class SshTerminal extends AbstractTerminal {
             Log.e(TAG, "setPtyWindowSize: Handler null");
             return;
         }
+        mCols = cols;
+        mRows = rows;
         Message message = mWriterHandler.obtainMessage(MSG_NOTIFY_PTY_RESIZE, cols, rows);
         mWriterHandler.sendMessage(message);
     }
 
     @Override
     protected void closePty() {
-        if (shell != null) {
-            shell.disconnect();
+        if (mShell != null) {
+            mShell.disconnect();
         }
-        if (session != null) {
-            session.disconnect();
+        if (mSession != null) {
+            mSession.disconnect();
         }
         if (mHandlerThread != null) mHandlerThread.quitSafely();
     }
